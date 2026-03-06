@@ -108,6 +108,12 @@ def main():
         print("TIP: Set META_AD_ACCOUNT_ID in your .env file (e.g., act_XXXXXXXXX)")
         print("     to see detailed account info and campaigns.")
 
+    # Show next steps
+    print("\n" + "=" * 50)
+    print("PROXIMO PASSO: Para pegar dados de otimizacao, rode:")
+    print("  python optimizer.py")
+    print("=" * 50)
+
 
 if __name__ == "__main__":
     main()
