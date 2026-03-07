@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blooming Nomad Digital | Gestao de Trafego Pago</title>
+    <meta name="description" content="Blooming Nomad Digital - Gestao de trafego pago e otimizacao de anuncios no Meta Ads. Mais resultados, menos desperdicio.">
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2D6A4F;
+            --primary-light: #40916C;
+            --primary-dark: #1B4332;
+            --accent: #D4A373;
+            --accent-light: #E9C46A;
+            --bg: #FEFAE0;
+            --bg-alt: #F4F1DE;
+            --text: #1B1B1B;
+            --text-light: #555;
+            --white: #FFFFFF;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            color: var(--text);
+            line-height: 1.6;
+            background: var(--bg);
+        }
+
+        /* ── NAV ── */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(254, 250, 224, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(45, 106, 79, 0.1);
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-cta {
+            background: var(--primary);
+            color: var(--white) !important;
+            padding: 0.6rem 1.4rem;
+            border-radius: 8px;
+            transition: background 0.3s !important;
+        }
+
+        .nav-cta:hover {
+            background: var(--primary-dark) !important;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.6rem;
+            cursor: pointer;
+            color: var(--primary-dark);
+        }
+
+        /* ── HERO ── */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 8rem 2rem 4rem;
+            background: linear-gradient(160deg, var(--bg) 0%, var(--bg-alt) 50%, rgba(45, 106, 79, 0.05) 100%);
+        }
+
+        .hero-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .hero-tag {
+            display: inline-block;
+            background: rgba(45, 106, 79, 0.1);
+            color: var(--primary);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.5px;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            line-height: 1.15;
+            color: var(--primary-dark);
+            margin-bottom: 1.5rem;
+            letter-spacing: -1px;
+        }
+
+        .hero h1 em {
+            color: var(--accent);
+            font-style: normal;
+        }
+
+        .hero p {
+            font-size: 1.15rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            max-width: 480px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.9rem 2rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        .hero-visual {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hero-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .hero-card::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 60px;
+            height: 60px;
+            background: var(--accent-light);
+            border-radius: 50%;
+            z-index: -1;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+
+        .metric-row:last-child {
+            border-bottom: none;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .metric-value {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--primary-dark);
+        }
+
+        .metric-value.positive {
+            color: var(--primary);
+        }
+
+        .metric-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-alt);
+            border-radius: 4px;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+
+        .metric-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent-light));
+            border-radius: 4px;
+            width: 0%;
+            transition: width 1.5s ease;
+        }
+
+        /* ── SECTION COMMON ── */
+        section {
+            padding: 5rem 2rem;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 3.5rem;
+        }
+
+        .section-title h2 {
+            font-size: 2.2rem;
+            color: var(--primary-dark);
+            margin-bottom: 0.8rem;
+            letter-spacing: -0.5px;
+        }
+
+        .section-title p {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* ── PROBLEMS ── */
+        .problems {
+            background: var(--bg-alt);
+        }
+
+        .problems-grid {
+            max-width: 900px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .problem-card {
+            background: var(--white);
+            padding: 1.8rem;
+            border-radius: 14px;
+            border-left: 4px solid var(--accent);
+            box-shadow: var(--shadow);
+        }
+
+        .problem-card h3 {
+            font-size: 1.05rem;
+            color: var(--primary-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .problem-card p {
+            font-size: 0.95rem;
+            color: var(--text-light);
+        }
+
+        /* ── SERVICES ── */
+        .services-grid {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .service-card {
+            background: var(--white);
+            padding: 2.5rem 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .service-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .service-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(45, 106, 79, 0.1);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 1.6rem;
+        }
+
+        .service-card h3 {
+            font-size: 1.15rem;
+            color: var(--primary-dark);
+            margin-bottom: 0.8rem;
+        }
+
+        .service-card p {
+            font-size: 0.95rem;
+            color: var(--text-light);
+        }
+
+        /* ── PROCESS ── */
+        .process {
+            background: var(--primary-dark);
+            color: var(--white);
+        }
+
+        .process .section-title h2 {
+            color: var(--white);
+        }
+
+        .process .section-title p {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .process-steps {
+            max-width: 800px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+        }
+
+        .step {
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: var(--accent);
+            color: var(--primary-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.2rem;
+            margin: 0 auto 1rem;
+        }
+
+        .step h3 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .step p {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* ── RESULTS ── */
+        .results-grid {
+            max-width: 900px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            text-align: center;
+        }
+
+        .result-item {
+            padding: 2rem;
+        }
+
+        .result-number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-label {
+            font-size: 1rem;
+            color: var(--text-light);
+        }
+
+        /* ── TESTIMONIALS ── */
+        .testimonials {
+            background: var(--bg-alt);
+        }
+
+        .testimonials-grid {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .testimonial-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .testimonial-text {
+            font-size: 1rem;
+            color: var(--text-light);
+            font-style: italic;
+            margin-bottom: 1.2rem;
+            line-height: 1.7;
+        }
+
+        .testimonial-author {
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .testimonial-role {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        /* ── CTA ── */
+        .cta {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            text-align: center;
+            padding: 5rem 2rem;
+        }
+
+        .cta h2 {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .cta p {
+            font-size: 1.15rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+            max-width: 550px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta .btn {
+            background: var(--accent);
+            color: var(--primary-dark);
+            font-size: 1.1rem;
+            padding: 1rem 2.5rem;
+        }
+
+        .cta .btn:hover {
+            background: var(--accent-light);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            background: var(--primary-dark);
+            color: rgba(255, 255, 255, 0.7);
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        footer .logo {
+            color: var(--white);
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        footer p {
+            font-size: 0.9rem;
+        }
+
+        /* ── ANIMATIONS ── */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 900px) {
+            .hero-container {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero p {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .hero-visual {
+                order: -1;
+            }
+
+            .hero-card {
+                max-width: 340px;
+                margin: 0 auto;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+                max-width: 400px;
+            }
+
+            .problems-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .process-steps {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: var(--bg);
+                flex-direction: column;
+                padding: 1rem 2rem;
+                gap: 1rem;
+                border-bottom: 1px solid rgba(0,0,0,0.1);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .process-steps {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .hero {
+                padding-top: 6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAV -->
+    <nav>
+        <a href="#" class="logo">Blooming <span>Nomad</span></a>
+        <ul class="nav-links">
+            <li><a href="#problemas">Dores</a></li>
+            <li><a href="#servicos">Servicos</a></li>
+            <li><a href="#processo">Processo</a></li>
+            <li><a href="#resultados">Resultados</a></li>
+            <li><a href="#contato" class="nav-cta">Fale Conosco</a></li>
+        </ul>
+        <button class="menu-toggle" onclick="document.querySelector('.nav-links').classList.toggle('active')">&#9776;</button>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <span class="hero-tag">GESTAO DE TRAFEGO PAGO</span>
+                <h1>Pare de <em>desperdicar</em> dinheiro com anuncios que nao convertem</h1>
+                <p>Otimizamos suas campanhas no Meta Ads com dados reais e estrategia. Mais vendas, menos custo por aquisicao.</p>
+                <div class="hero-buttons">
+                    <a href="#contato" class="btn btn-primary">Quero Resultados</a>
+                    <a href="#servicos" class="btn btn-outline">Como Funciona</a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="hero-card">
+                    <h3 style="margin-bottom: 1.2rem; color: var(--primary-dark); font-size: 1rem;">Performance dos Ultimos 30 Dias</h3>
+                    <div class="metric-row">
+                        <span class="metric-label">ROAS</span>
+                        <span class="metric-value positive">4.8x</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Custo por Compra</span>
+                        <span class="metric-value">R$ 12,40</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">CTR</span>
+                        <span class="metric-value positive">3.2%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Conversoes</span>
+                        <span class="metric-value positive">+127%</span>
+                    </div>
+                    <div class="metric-bar">
+                        <div class="metric-bar-fill" id="heroBar"></div>
+                    </div>
+                    <p style="font-size: 0.8rem; color: var(--text-light); margin-top: 0.5rem;">Otimizacao em progresso...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROBLEMS -->
+    <section class="problems" id="problemas">
+        <div class="section-title fade-up">
+            <h2>Isso acontece com voce?</h2>
+            <p>A maioria dos negocios enfrenta esses desafios com trafego pago</p>
+        </div>
+        <div class="problems-grid">
+            <div class="problem-card fade-up">
+                <h3>Gastando sem retorno</h3>
+                <p>Voce investe em anuncios mas nao sabe se esta tendo lucro ou prejuizo real.</p>
+            </div>
+            <div class="problem-card fade-up">
+                <h3>Publico errado</h3>
+                <p>Seus anuncios aparecem para pessoas que nunca vao comprar de voce.</p>
+            </div>
+            <div class="problem-card fade-up">
+                <h3>Sem dados claros</h3>
+                <p>Voce nao tem relatorios de performance e toma decisoes no escuro.</p>
+            </div>
+            <div class="problem-card fade-up">
+                <h3>Criativos cansados</h3>
+                <p>A frequencia dos anuncios esta alta e o publico ja ignorou seus criativos.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SERVICES -->
+    <section id="servicos">
+        <div class="section-title fade-up">
+            <h2>O que fazemos por voce</h2>
+            <p>Gestao completa das suas campanhas com foco em resultado</p>
+        </div>
+        <div class="services-grid">
+            <div class="service-card fade-up">
+                <div class="service-icon">&#9881;</div>
+                <h3>Otimizacao de Campanhas</h3>
+                <p>Analisamos CTR, CPC, ROAS e frequencia para ajustar suas campanhas em tempo real.</p>
+            </div>
+            <div class="service-card fade-up">
+                <div class="service-icon">&#128202;</div>
+                <h3>Relatorios Detalhados</h3>
+                <p>Dashboards com metricas por campanha, publico, plataforma e posicionamento.</p>
+            </div>
+            <div class="service-card fade-up">
+                <div class="service-icon">&#127919;</div>
+                <h3>Segmentacao Inteligente</h3>
+                <p>Encontramos o publico certo por idade, genero, regiao e dispositivo.</p>
+            </div>
+            <div class="service-card fade-up">
+                <div class="service-icon">&#128176;</div>
+                <h3>Reducao de CPA</h3>
+                <p>Cortamos desperdicio e diminuimos seu custo por aquisicao progressivamente.</p>
+            </div>
+            <div class="service-card fade-up">
+                <div class="service-icon">&#128640;</div>
+                <h3>Escala com Controle</h3>
+                <p>Aumentamos o investimento mantendo o ROAS saudavel e previsivel.</p>
+            </div>
+            <div class="service-card fade-up">
+                <div class="service-icon">&#9888;</div>
+                <h3>Alertas Automaticos</h3>
+                <p>Identificamos problemas como fadiga de anuncio e CPC alto antes de prejudicar seus resultados.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROCESS -->
+    <section class="process" id="processo">
+        <div class="section-title fade-up">
+            <h2>Nosso processo</h2>
+            <p>4 etapas para transformar suas campanhas</p>
+        </div>
+        <div class="process-steps">
+            <div class="step fade-up">
+                <div class="step-number">1</div>
+                <h3>Diagnostico</h3>
+                <p>Conectamos sua conta e analisamos todas as metricas atuais</p>
+            </div>
+            <div class="step fade-up">
+                <div class="step-number">2</div>
+                <h3>Estrategia</h3>
+                <p>Definimos publico, orcamento e objetivos com base nos dados</p>
+            </div>
+            <div class="step fade-up">
+                <div class="step-number">3</div>
+                <h3>Execucao</h3>
+                <p>Criamos e otimizamos campanhas com monitoramento diario</p>
+            </div>
+            <div class="step fade-up">
+                <div class="step-number">4</div>
+                <h3>Escala</h3>
+                <p>Aumentamos o investimento nas campanhas que mais performam</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- RESULTS -->
+    <section id="resultados">
+        <div class="section-title fade-up">
+            <h2>Resultados que entregamos</h2>
+            <p>Numeros reais de clientes que confiam na Blooming Nomad</p>
+        </div>
+        <div class="results-grid">
+            <div class="result-item fade-up">
+                <div class="result-number" data-target="4.8">0</div>
+                <div class="result-label">ROAS medio</div>
+            </div>
+            <div class="result-item fade-up">
+                <div class="result-number" data-target="42">0</div>
+                <div class="result-label">% de reducao no CPA</div>
+            </div>
+            <div class="result-item fade-up">
+                <div class="result-number" data-target="127">0</div>
+                <div class="result-label">% mais conversoes</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section class="testimonials">
+        <div class="section-title fade-up">
+            <h2>O que nossos clientes dizem</h2>
+        </div>
+        <div class="testimonials-grid">
+            <div class="testimonial-card fade-up">
+                <p class="testimonial-text">"Antes eu gastava R$3.000 por mes em anuncios sem saber o retorno. Agora tenho clareza total dos numeros e meu ROAS subiu de 1.2x para 4.5x."</p>
+                <p class="testimonial-author">Marina S.</p>
+                <p class="testimonial-role">Loja de Moda Feminina</p>
+            </div>
+            <div class="testimonial-card fade-up">
+                <p class="testimonial-text">"A equipe identificou que 70% do meu orcamento ia para um publico que nao convertia. Depois do ajuste, minhas vendas triplicaram."</p>
+                <p class="testimonial-author">Ricardo L.</p>
+                <p class="testimonial-role">E-commerce de Suplementos</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta" id="contato">
+        <h2 class="fade-up">Pronto para escalar seus resultados?</h2>
+        <p class="fade-up">Agende uma analise gratuita da sua conta de anuncios e descubra onde voce esta perdendo dinheiro.</p>
+        <a href="https://wa.me/5500000000000?text=Ol%C3%A1%2C%20quero%20uma%20an%C3%A1lise%20gratuita%20da%20minha%20conta%20de%20an%C3%BAncios" class="btn fade-up" target="_blank" rel="noopener">Agendar Analise Gratuita</a>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <a href="#" class="logo">Blooming <span>Nomad</span></a>
+        <p>Blooming Nomad Digital &copy; 2026. Gestao de trafego pago com inteligencia.</p>
+    </footer>
+
+    <script>
+        // Intersection Observer for fade-up animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.classList.add('visible');
+                    }, index * 100);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+        // Hero bar animation
+        setTimeout(() => {
+            document.getElementById('heroBar').style.width = '78%';
+        }, 500);
+
+        // Counter animation for results
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const el = entry.target;
+                    const target = parseFloat(el.dataset.target);
+                    const isDecimal = target % 1 !== 0;
+                    const suffix = isDecimal ? 'x' : '%';
+                    let current = 0;
+                    const increment = target / 60;
+                    const timer = setInterval(() => {
+                        current += increment;
+                        if (current >= target) {
+                            current = target;
+                            clearInterval(timer);
+                        }
+                        el.textContent = isDecimal ? current.toFixed(1) + suffix : Math.floor(current) + suffix;
+                    }, 25);
+                    counterObserver.unobserve(el);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('.result-number').forEach(el => counterObserver.observe(el));
+    </script>
+
+</body>
+</html>
