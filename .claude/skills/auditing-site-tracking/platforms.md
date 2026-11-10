@@ -13,7 +13,7 @@ Só entram aqui fatos verificados em um site real; acrescente ao fim de cada tra
 - Injeção de código: Pages > Website Tools > Code Injection; link direto `https://account.squarespace.com/project-picker?client_id=helpcenter&redirect_url=%2Fpages%2Fwebsite-tools%2Fcode-injection`. Planos Core, Plus, Advanced e alguns antigos; exige permissão de administrador.
 - Banner de cookies: Settings > Cookies & Visitor Data (nome das opções não verificado).
 - Agendamento Acuity/Squarespace Scheduling roda em iframe de `app.acuityscheduling.com`: invisível de fora e fora do alcance do banner. Opções: integrações do Acuity (atribuição fraca) ou redirecionar para página de obrigado no site (não verificado por plano).
-- Exemplo completo: `clients/chiara-barraco-photography/`.
+- Exemplo completo (config, snippets, README): `clients/chiara-barraco-photography/`.
 
 ## Outras plataformas
 

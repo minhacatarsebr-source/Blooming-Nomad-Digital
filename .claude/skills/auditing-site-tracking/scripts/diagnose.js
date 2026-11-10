@@ -1,5 +1,6 @@
 // Nivel 1 - Diagnostico. Uso: node diagnose.js <url> <pasta-de-saida> [maxPaginas=8]
-// So carrega paginas (nao clica, nao envia formularios). Grava <pasta>/diagnose.json e imprime um resumo.
+// So carrega paginas (nao clica, nao envia formularios). Grava <pasta>/diagnose.json (um objeto por URL, mesmos campos do resumo,
+// com inlineTracking completo e hitsBeforeConsent detalhado) e imprime um resumo.
 const { chromium } = require('playwright');
 const fs = require('fs');
 const [start, out, maxArg] = process.argv.slice(2);
@@ -18,9 +19,10 @@ const extract = () => {
     cmp: ['Cookiebot', 'OneTrust', 'OnetrustActiveGroups', '_iub', 'CookieConsent', 'cookieyes', 'complianz', 'cmplz_banner', '__tcfapi', 'Didomi', 'UC_UI', 'klaro', 'CookieFirst', 'axeptioSDK', 'tarteaucitron'].filter(has),
     squarespaceCookieSettings: ctx && ctx.cookieSettings ? { banner: ctx.cookieSettings.isCookieBannerEnabled, restrictive: ctx.cookieSettings.isRestrictiveCookiePolicyEnabled, type: ctx.cookieSettings.cookieBannerAcceptType } : null,
     containers: Object.keys(window.google_tag_manager || {}).filter(k => /^(GTM-|G-|AW-|DC-)/.test(k)),
+    pixelIds: [...new Set((document.documentElement.innerHTML.match(/fbq\(\s*['"]init['"]\s*,\s*['"](\d+)['"]/g) || []).map(m => m.match(/(\d{6,})/)[1]))],
     consentDefault: (window.dataLayer || []).some(e => e && e[0] === 'consent' && e[1] === 'default'),
     dataLayerEvents: (window.dataLayer || []).map(e => (e && (e.event || (e[0] && [e[0], e[1]].join(':')))) || '?').slice(0, 40),
-    inlineTracking: q('script:not([src])').map(s => s.textContent).filter(t => /gtag\(|fbq\(|dataLayer\.push|addEventListener\(['"]submit/.test(t) && t.length < 6000).map(t => t.replace(/\s+/g, ' ').slice(0, 500)),
+    inlineTracking: q('script:not([src])').map(s => s.textContent).filter(t => /gtag\(|fbq\(|dataLayer\.push|addEventListener\(['"]submit/.test(t) && t.length < 6000).map(t => t.replace(/\s+/g, ' ').slice(0, 2500)),
     banner: q('[id*=cookie i],[class*=cookie i],[id*=consent i],[class*=consent i]').filter(e => e.offsetHeight > 20).slice(0, 1).map(e => ({ cls: e.className.toString().slice(0, 80), text: e.innerText.replace(/\s+/g, ' ').slice(0, 200), buttons: [...e.querySelectorAll('button,a')].map(b => b.innerText.trim()).filter(Boolean).slice(0, 6) })),
     forms: q('form').map(f => ({ id: f.id, cls: f.className.toString().slice(0, 80), action: f.getAttribute('action'), fields: [...f.elements].map(e => e.type + ':' + (e.name || e.id)).slice(0, 15) })),
     iframes: q('iframe').map(f => (f.src || '').slice(0, 120)).filter(Boolean),
@@ -40,7 +42,8 @@ const extract = () => {
       const resp = await p.goto(url, { waitUntil: 'load', timeout: 60000 }); await p.waitForTimeout(6000);
       const info = await p.evaluate(extract);
       const cookies = (await ctx.cookies()).map(c => c.name);
-      pages[url] = { status: resp.status(), ...info, cookiesBeforeConsent: cookies, trackingCookiesBeforeConsent: cookies.filter(n => COOKIE.test(n)), hitsBeforeConsent: hits };
+      const eventsBeforeConsent = [...new Set(hits.filter(h => h.ev).map(h => `${h.host}:${h.ev}${h.gcs ? ':gcs=' + h.gcs : ''}${h.gcd ? ':gcd=' + h.gcd : ''}`))];
+      pages[url] = { status: resp.status(), ...info, cookiesBeforeConsent: cookies, trackingCookiesBeforeConsent: cookies.filter(n => COOKIE.test(n)), eventsBeforeConsent, trackerHosts: [...new Set(hits.map(h => h.host))], hitsBeforeConsent: hits };
       if (Object.keys(pages).length === 1) await p.screenshot({ path: out + '/home.png' });
       info.links.sort((a, b) => (/(contact|contato|book|agend|kontakt)/i.test(b) ? 1 : 0) - (/(contact|contato|book|agend|kontakt)/i.test(a) ? 1 : 0)).forEach(l => queue.push(l));
     } catch (e) { pages[url] = { error: String(e).slice(0, 200) }; }
@@ -51,7 +54,6 @@ const extract = () => {
   for (const [u, d] of Object.entries(pages)) {
     console.log('\n=== ' + u + (d.error ? '  ERRO ' + d.error : '  ' + d.status));
     if (d.error) continue;
-    const evs = [...new Set(d.hitsBeforeConsent.filter(h => h.ev).map(h => `${h.host}:${h.ev}${h.gcs ? ':gcs=' + h.gcs : ''}${h.gcd ? ':gcd=' + h.gcd : ''}`))];
-    console.log(JSON.stringify({ platform: d.platform, containers: d.containers, globals: d.globals, cmp: d.cmp, squarespaceCookieSettings: d.squarespaceCookieSettings, consentDefault: d.consentDefault, banner: d.banner, trackingCookiesBeforeConsent: d.trackingCookiesBeforeConsent, eventsBeforeConsent: evs, trackerHosts: [...new Set(d.hitsBeforeConsent.map(h => h.host))], forms: d.forms, iframes: d.iframes, ctas: d.ctas, privacyLinks: d.privacyLinks, inlineTracking: d.inlineTracking }, null, 1));
+    console.log(JSON.stringify({ platform: d.platform, containers: d.containers, pixelIds: d.pixelIds, globals: d.globals, cmp: d.cmp, squarespaceCookieSettings: d.squarespaceCookieSettings, consentDefault: d.consentDefault, banner: d.banner, trackingCookiesBeforeConsent: d.trackingCookiesBeforeConsent, eventsBeforeConsent: d.eventsBeforeConsent, trackerHosts: d.trackerHosts, forms: d.forms, iframes: d.iframes, ctas: d.ctas, privacyLinks: d.privacyLinks, inlineTracking: d.inlineTracking.map(t => t.slice(0, 400)) }, null, 1));
   }
 })().catch(e => { console.error(e); process.exit(1); });

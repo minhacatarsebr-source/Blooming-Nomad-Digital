@@ -15,6 +15,7 @@ Rode tudo sem parar para perguntar. Só pare quando a próxima ação depender d
 - **Nunca peça nem use senha do cliente.** Mudanças no painel são feitas pelo usuário; você entrega o passo a passo e os snippets.
 - **Seus testes enviam eventos ao GA4/Meta de produção.** Rode o mínimo necessário e informe no relatório quantos eventos de teste gerou e a data.
 - **Não declare "corrigido" sem rodar `audit.js` no site real depois da mudança.**
+- **Pedido que viola uma regra acima** (ex.: "envia o formulário pra testar"): não faça; diga o porquê em uma linha e ofereça a alternativa (teste simulado, ou o cliente faz um envio real).
 - Verifique no código/HTML do site qualquer seletor, cookie ou nome de menu antes de usá-lo; marque como "não verificado" o que não conseguiu confirmar.
 
 ## Nível 1 — Diagnóstico
@@ -34,7 +35,9 @@ Leia a saída e responda, com evidência, cada linha:
 | Evento de lead dispara em envio inválido? | `inlineTracking` com listener de `submit`; confirme com `audit.js` (D1) |
 | Política de privacidade? | `privacyLinks` |
 
-Depois crie `clients/<slug>/audit.config.json` (formato no topo de `scripts/audit.js`) e rode a auditoria de base:
+`<slug>` = nome do negócio em minúsculas com hífens (ex.: `chiara-barraco-photography`). Para escrever seletores e nomes de evento, leia `inlineTracking` completo em `diag/diagnose.json`.
+
+Depois copie `audit.config.example.json` para `clients/<slug>/audit.config.json`, ajuste (remova `form`/`clicks`/`simulate` que não se aplicam) e rode a auditoria de base — é ela que responde a linha do envio inválido:
 
 ```bash
 node .claude/skills/auditing-site-tracking/scripts/audit.js clients/<slug>/audit.config.json
@@ -57,9 +60,11 @@ Depois que o usuário disser que aplicou, rode `audit.js` no site real e teste a
 
 ## Entrega (sempre nesta forma)
 
+Pedido de um nível só: entregue os mesmos itens, limitados ao que foi feito (README sem as seções dos níveis não executados). A mensagem ao cliente só entra quando houver pergunta para ele.
+
 1. `clients/<slug>/README.md`: tabela de problemas com evidência e gravidade; passos de correção; tabela de resultados por rodada (antes / simulação / depois); limites do que foi verificado; pendências.
 2. Commit e push na branch da sessão.
-3. Resposta no chat, nesta ordem: resultado em uma frase (X/Y passam) → problemas → o que o usuário precisa fazer no painel → o que confirmar com o cliente → eventos de teste gerados.
+3. Resposta no chat, nesta ordem: resultado em uma frase (X/Y passam) → problemas → o que o usuário precisa fazer no painel → o que confirmar com o cliente → eventos de teste gerados (some a linha "Eventos de teste enviados" de cada rodada do `audit.js`; cada página do `diagnose.js` gera 1 pageview ou ping).
 4. Mensagem curta e amigável para o cliente, **em inglês** salvo pedido contrário, com as perguntas de `client-questions.md` que se aplicarem.
 
 ## Erros comuns

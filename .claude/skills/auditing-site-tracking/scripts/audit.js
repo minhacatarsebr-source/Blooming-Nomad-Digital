@@ -3,7 +3,7 @@
 // config: { "base": "https://site", "page": "/contact",
 //   "accept": "accept all|aceitar", "decline": "decline all|recusar",        (regex do texto dos botoes do banner)
 //   "consentCookies": [{"name":"x","value":"true"}],                        (opcional: usado se o banner nao for clicavel)
-//   "form": { "submit": "form button[type=submit]", "successSelector": ".form-submission-text", "successClass": "form-submission-text",
+//   "form": { "submit": "form button[type=submit]", "successClass": "form-submission-text",
 //             "ga": "generate_lead", "meta": "Lead" },                       (opcional)
 //   "clicks": [{ "name": "WhatsApp", "selector": "a[href*='wa.me']", "ga": "contact", "meta": "Contact" }],
 //   "simulate": { "removeRegex": "<script>...antigo...</script>", "header": "fix/header-injection.html", "footer": "fix/footer-injection.html" } }
@@ -16,7 +16,7 @@ const URL0 = cfg.base.replace(/\/$/, '') + (cfg.page || '/'); const ORIGIN = new
 const COOKIE = /^(_ga|_gid|_gcl|_fbp|_fbc|fr$|_ttp|_uet|_clck|_clsk|_hj|li_|_pin|IDE$|hubspotutk)/;
 const isGA = u => /\/g\/collect/.test(u); const isMeta = u => /facebook\.com\/tr|on\.aws\/events/.test(u);
 const isOther = u => /tiktok\.com\/api|px\.ads\.linkedin|bat\.bing\.com\/action|clarity\.ms\/collect|ct\.pinterest/.test(u);
-const results = [];
+const results = []; const sent = {};
 const check = (id, ok, detail) => { results.push(ok); console.log(`${ok === null ? 'SKIP' : ok ? 'PASS' : 'FAIL'}  ${id}${detail ? '  — ' + detail : ''}`); };
 const evs = h => { const u = new URL(h.u); const m = h.b.match(/(?:^|&|\s)en=([^&\s]+)/g); if (u.searchParams.get('en')) return [u.searchParams.get('en')]; if (m) return m.map(x => x.replace(/^.*en=/, '')); return [u.searchParams.get('ev') || (h.b.match(/"event_name":"([^"]+)"/) || [])[1] || '?']; };
 // chamadas fbq('track') feitas enquanto o pixel esta com fbq('consent','revoke') ficam retidas: nao contam como envio
@@ -27,7 +27,7 @@ async function open(browser) {
   const ctx = await browser.newContext({ viewport: { width: 1366, height: 900 } }); const page = await ctx.newPage(); const hits = [];
   await page.addInitScript(() => { let real; window.__fbqCalls = [];   // espia chamadas fbq: os hits de rede da Meta nao sao confiaveis em headless
     Object.defineProperty(window, 'fbq', { configurable: true, get() { return real; }, set(v) { real = typeof v === 'function' ? new Proxy(v, { apply(t, th, a) { window.__fbqCalls.push(Array.from(a).slice(0, 2).join(':')); return Reflect.apply(t, th, a); } }) : v; } }); });
-  page.on('request', r => { const u = r.url(); if (isGA(u) || isMeta(u) || isOther(u)) hits.push({ u, b: r.postData() || '' }); });
+  page.on('request', r => { const u = r.url(); if (isGA(u) || isMeta(u) || isOther(u)) { const h = { u, b: r.postData() || '' }; hits.push(h); const g = new URL(u).searchParams.get('gcs'); for (const e of evs(h)) { const k = (isGA(u) ? 'GA4' : isMeta(u) ? 'Meta' : 'outro') + ':' + e + (g === 'G100' ? ' (ping sem cookies)' : ''); sent[k] = (sent[k] || 0) + 1; } } });
   if (SIM && cfg.simulate) await page.route(u => u.origin === ORIGIN, async route => {
     if (route.request().resourceType() !== 'document') return route.continue();
     let html = execFileSync('curl', ['-sS', '-L', '-m', '40', route.request().url()], { maxBuffer: 1 << 26 }).toString();  // curl respeita o proxy; fetch do node nao
@@ -93,6 +93,7 @@ const load = async s => { await s.page.goto(URL0, { waitUntil: 'load', timeout: 
     if (DEBUG) console.log('   hits:', s.hits.map(h => h.u.slice(0, 80) + ' ' + evs(h)));
   }
   await browser.close();
+  console.log('\nEventos de teste enviados a producao nesta rodada (hits de rede): ' + (Object.entries(sent).map(([k, v]) => `${k} x${v}`).join(', ') || 'nenhum'));
   const fail = results.filter(r => r === false).length, pass = results.filter(r => r === true).length;
   console.log(`\n${pass}/${pass + fail} PASS, ${fail} FAIL${results.includes(null) ? ', ' + results.filter(r => r === null).length + ' SKIP' : ''}`);
   process.exit(fail ? 1 : 0);
