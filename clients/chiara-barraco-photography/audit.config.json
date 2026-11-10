@@ -1,0 +1,10 @@
+{
+  "base": "https://www.chiarabarracophotography.com",
+  "page": "/contact",
+  "accept": "accept all",
+  "decline": "decline all",
+  "consentCookies": [{ "name": "ss_performanceCookiesAllowed", "value": "true" }, { "name": "ss_marketingCookiesAllowed", "value": "true" }],
+  "form": { "submit": "form button[type=submit]", "successClass": "form-submission-text", "ga": "generate_lead", "meta": "Lead" },
+  "clicks": [{ "name": "WhatsApp", "selector": "a[href*='wa.me']", "ga": "contact", "meta": "Contact" }],
+  "simulate": { "header": "fix/header-injection.html", "footer": "fix/footer-injection.html" }
+}
