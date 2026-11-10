@@ -1,0 +1,26 @@
+<!-- Blooming Nomad | Consent Mode v2 bridge (Squarespace cookie banner -> Google) | v1
+     Onde colar: Squarespace > Settings > Advanced > Code Injection > HEADER
+     Requer: banner de cookies nativo ativo em modo opt-in (ver README). -->
+<script>
+(function () {
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  function allowed(name) {
+    var m = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+    return !!m && m[1] === 'true';
+  }
+  function state() {
+    var a = allowed('ss_performanceCookiesAllowed') ? 'granted' : 'denied';
+    var m = allowed('ss_marketingCookiesAllowed') ? 'granted' : 'denied';
+    return { analytics_storage: a, ad_storage: m, ad_user_data: m, ad_personalization: m };
+  }
+  var last = state();
+  var def = { wait_for_update: 500 };
+  for (var k in last) def[k] = last[k];
+  gtag('consent', 'default', def);
+  setInterval(function () {
+    var now = state();
+    if (JSON.stringify(now) !== JSON.stringify(last)) { last = now; gtag('consent', 'update', now); }
+  }, 500);
+})();
+</script>

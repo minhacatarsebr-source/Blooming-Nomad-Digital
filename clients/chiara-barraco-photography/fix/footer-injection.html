@@ -1,0 +1,43 @@
+<!-- Blooming Nomad | Conversion events | v1
+     Onde colar: Squarespace > Settings > Advanced > Code Injection > FOOTER
+     SUBSTITUI o snippet antigo "document.addEventListener('submit', ...generate_lead...)" (apagar o antigo).
+     Só envia eventos se gtag/fbq existirem, ou seja, depois do consentimento. -->
+<script>
+(function () {
+  if (window.__bnTracking) return; window.__bnTracking = true;
+  function ga(name, params) { if (typeof window.gtag === 'function') window.gtag('event', name, params || {}); }
+  function fb(name, params) { if (typeof window.fbq === 'function') window.fbq('track', name, params || {}); }
+  function visible(el) { return !!el && !el.classList.contains('hidden') && el.getClientRects().length > 0; }
+
+  // 1) Lead: só quando o Squarespace mostra a mensagem de sucesso do formulário
+  function checkLeads() {
+    var nodes = document.querySelectorAll('.form-submission-text');
+    for (var i = 0; i < nodes.length; i++) {
+      var n = nodes[i];
+      if (n.__bnSent || !visible(n)) continue;
+      n.__bnSent = true;
+      ga('generate_lead', { lead_source: 'squarespace_form', page_path: location.pathname });
+      fb('Lead', { content_name: location.pathname });
+    }
+  }
+  new MutationObserver(checkLeads).observe(document.documentElement,
+    { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+
+  // 2) Cliques: WhatsApp e CTA de agendamento
+  var lastClick = '', lastAt = 0;
+  document.addEventListener('click', function (e) {
+    var a = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+    if (!a) return;
+    var href = a.getAttribute('href') || '';
+    var now = Date.now();
+    if (href === lastClick && now - lastAt < 1000) return; // o Squarespace pode redisparar o clique
+    lastClick = href; lastAt = now;
+    if (/wa\.me\/|api\.whatsapp\.com|whatsapp:/i.test(href)) {
+      ga('contact', { method: 'whatsapp', page_path: location.pathname });
+      fb('Contact', { method: 'whatsapp' });
+    } else if (/#bookaphotoshoot/i.test(href)) {
+      ga('book_cta_click', { link_text: (a.textContent || '').trim().slice(0, 60), page_path: location.pathname });
+    }
+  }, true);
+})();
+</script>
