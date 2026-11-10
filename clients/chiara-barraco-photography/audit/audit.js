@@ -28,7 +28,7 @@ async function open(browser, cookies) {
   const dl = () => page.evaluate(() => (window.dataLayer || []).filter(e => e && e[0] === 'event').map(e => e[1]));
   return { ctx, page, hits, fbq, dl };
 }
-const isMeta = h => /facebook\.com\/tr|on\.aws\/events/.test(h.u);
+var isMeta = h => /facebook\.com\/tr|on\.aws\/events/.test(h.u);
 const ev = h => { const u = new URL(h.u); const m = h.b.match(/(?:^|&|\s)en=([^&\s]+)/g); if (m && !u.searchParams.get('en')) return m.map(x => x.replace(/^.*en=/, '')).join('+'); return u.searchParams.get('en') || u.searchParams.get('ev') || (h.b.match(/"event_name":"([^"]+)"/) || [])[1] || '?'; };
 
 (async () => {
@@ -45,7 +45,10 @@ const ev = h => { const u = new URL(h.u); const m = h.b.match(/(?:^|&|\s)en=([^&
   check('A3 banner em opt-in', cfg.cookieBannerAcceptType === 'OPT_IN' && cfg.isCookieBannerEnabled === true);
   const ck = (await s.ctx.cookies()).map(c => c.name).filter(n => /^(_ga|_fbp|_gcl|fr$)/.test(n));
   check('A4 nenhum cookie de analytics/ads antes do consentimento', ck.length === 0, ck.join(', '));
-  check('A5 nenhum hit GA4/Meta antes do consentimento', s.hits.length === 0, [...new Set(s.hits.map(h => new URL(h.u).hostname + ':' + ev(h)))].join(', '));
+  // Consent Mode avancado: pings GA4 sem cookies (gcs=G100) sao esperados; qualquer outro hit e falha
+  const bad = s.hits.filter(h => isMeta(h) || new URL(h.u).searchParams.get('gcs') !== 'G100');
+  check('A5 antes do consentimento: nenhum hit Meta e GA4 so em modo negado (gcs=G100, sem cookies)', bad.length === 0,
+    [...new Set(s.hits.map(h => new URL(h.u).hostname + ':' + ev(h) + ':gcs=' + (new URL(h.u).searchParams.get('gcs') || '-')))].join(', '));
   check('A6 link de politica de privacidade na pagina', /href="[^"]*(privacy|privacidade|cookie-policy)[^"]*"/i.test(html));
   check('A7 snippet antigo de generate_lead removido', SIM || !/addEventListener\('submit'[^<]*generate_lead/.test(html));
   check('A8 snippets novos instalados', SIM || (html.includes('Consent Mode v2 bridge') && html.includes('__bnTracking')));

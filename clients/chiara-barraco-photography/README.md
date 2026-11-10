@@ -38,7 +38,22 @@ node audit/audit.js --simulate-fix  # aplica os snippets só no navegador de tes
 
 | Rodada | Resultado |
 |--------|-----------|
-| Site real, antes da correção | 1/16 |
-| Simulação dos snippets | 10/16 — B1–B8, A7 e A8 passam; A1–A6 dependem dos passos 1 e 4 no painel |
+| Site real, antes da correção (2026-11-10) | 1/16 |
+| Simulação dos snippets | 10/16 |
+| Site real, depois da correção (2026-11-10) | 15/16 — só falta a política de privacidade (A6) |
+
+Teste do banner real (página inicial):
+
+| Situação | Cookies | GA4 | Meta |
+|----------|---------|-----|------|
+| Antes de escolher | só `crumb` (técnico) | ping sem cookies, `gcs=G100`, `gcd=13p3q3p3p5l1` | nenhum evento |
+| "Decline all" | `ss_*Allowed=false`, nenhum de analytics/ads | continua `gcs=G100` | nenhum evento |
+| "Accept all" | `_ga`, `_ga_V23L186V6Q`, `_fbp` | `gcs=G111`, `gcd=13r3r3r3r5l1`; na página seguinte `13t3r3t3t5l1` | PageView |
+
+Pendências e ressalvas:
+
+- Política de privacidade ainda não existe (passo 4).
+- Acuity ainda sem GA4/Pixel (passo 5).
+- O Squarespace carrega `gtag.js` e `fbevents.js` antes do consentimento. Com o Consent Mode o GA4 envia só pings sem cookies (modo "avançado") e o Pixel não envia evento, mas o navegador ainda contata Google e Meta. Se o cliente quiser bloqueio total antes do aceite (modo "básico"), é preciso trocar as integrações nativas por tags carregadas só após o consentimento.
 
 Limites da auditoria: o "sucesso" do formulário é simulado inserindo o elemento `.form-submission-text` (não enviamos lead real); os eventos da Meta são verificados pela chamada `fbq`, não pelo hit de rede; o estado "aceitou" é simulado pelos cookies `ss_performanceCookiesAllowed`/`ss_marketingCookiesAllowed`. Depois de ativar o banner, repetir a auditoria e fazer um envio real de teste.
