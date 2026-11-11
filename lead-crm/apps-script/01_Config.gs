@@ -140,6 +140,6 @@ var SETTINGS_LISTS = [
 var SCORING_DEFAULT_RULES = [
   ['YES', 'Purchase intent', 'Hot Lead Answer', 'is one of', 'Yes;Ja;Sim', 60, 'Answered the qualifying form question positively.'],
   ['YES', 'Contactability', 'Phone Valid', 'equals', 'TRUE', 15, 'Valid phone number provided.'],
-  ['YES', 'Contactability', 'Email', 'not empty', '', 10, 'Email address provided.'],
+  ['YES', 'Contactability', 'Email Valid', 'equals', 'TRUE', 10, 'Valid email address provided.'],
   ['YES', 'Product or service fit', 'Product / Service Interest', 'not empty', '', 15, 'Named a specific product or service.']
 ];

@@ -68,13 +68,13 @@ test('resolveCountry, email, WhatsApp link, sanitizeCell, parseDate', () => {
 
 test('calculateLeadScore: transparent, configurable, missing data is neutral', () => {
   const hot = ctx.calculateLeadScore(
-    { 'Hot Lead Answer': 'ja', 'Phone Valid': 'TRUE', Email: 'a@b.nl', 'Product / Service Interest': 'Kitchen' },
+    { 'Hot Lead Answer': 'ja', 'Phone Valid': 'TRUE', 'Email Valid': 'TRUE', 'Product / Service Interest': 'Kitchen' },
     rules, settings);
   assert.strictEqual(hot.score, 100);
   assert.strictEqual(hot.quality, 'HOT');
   assert.match(hot.explanation, /\+60 Answered the qualifying form question/);
 
-  const noAnswer = ctx.calculateLeadScore({ 'Phone Valid': 'TRUE', Email: 'a@b.nl', 'Product / Service Interest': 'x' }, rules, settings);
+  const noAnswer = ctx.calculateLeadScore({ 'Phone Valid': 'TRUE', 'Email Valid': 'TRUE', 'Product / Service Interest': 'x' }, rules, settings);
   assert.strictEqual(noAnswer.score, 40);
   assert.strictEqual(noAnswer.quality, 'WARM');
 

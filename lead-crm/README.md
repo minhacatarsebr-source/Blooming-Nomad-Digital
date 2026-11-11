@@ -19,7 +19,8 @@ One spreadsheet per client. The agency installs it; the client's sales team work
 
 **Testing status.** The business logic and the full flow are covered by automated tests
 that run against an in-memory simulation of Google Sheets (`node --test lead-crm/tests/*.test.js`,
-19 tests). The code has **not yet been run inside a real Google spreadsheet**. Do the
+19 tests). Setup, example leads, sync and dashboard were confirmed in a real spreadsheet on 11/11/2026; the follow-up
+form, mobile editing, triggers and notifications have not been confirmed there yet. Do the
 [first-install checklist](#5-first-install-checklist) before giving a copy to a client.
 
 ## 1. Tabs
