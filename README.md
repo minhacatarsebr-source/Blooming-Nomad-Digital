@@ -38,3 +38,7 @@ Connect and manage your Meta/Facebook Ads account programmatically.
 - **NEVER** commit your `.env` file
 - The `.gitignore` is configured to exclude `.env` files
 - Use `.env.example` as a template
+
+## Lead CRM (Google Sheets)
+
+A reusable Google Sheets + Apps Script CRM for Meta Lead Ads leads lives in [`lead-crm/`](lead-crm/README.md).

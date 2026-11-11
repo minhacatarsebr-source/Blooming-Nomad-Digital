@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    body { font-family: Arial, sans-serif; font-size: 13px; color: #1f2937; margin: 12px; }
+    h3 { margin: 0 0 2px; font-size: 15px; }
+    .sub { color: #6b7280; margin-bottom: 12px; }
+    label { display: block; font-weight: bold; margin: 10px 0 3px; }
+    select, input, textarea { width: 100%; box-sizing: border-box; padding: 6px; font-size: 13px;
+      border: 1px solid #d1d5db; border-radius: 4px; }
+    textarea { height: 60px; resize: vertical; }
+    .hint { color: #6b7280; font-size: 11px; margin-top: 2px; }
+    .actions { margin-top: 16px; display: flex; gap: 8px; }
+    button { padding: 8px 16px; border-radius: 4px; border: 1px solid #d1d5db; background: #fff; cursor: pointer; }
+    button.primary { background: #2563eb; border-color: #2563eb; color: #fff; }
+    button:disabled { opacity: 0.6; cursor: default; }
+    #message { margin-top: 10px; font-weight: bold; }
+    #message.error { color: #dc2626; }
+    #message.ok { color: #16a34a; }
+  </style>
+</head>
+<body>
+  <h3 id="leadName"></h3>
+  <div class="sub" id="leadInfo"></div>
+
+  <label for="type">Activity Type *</label>
+  <select id="type"></select>
+
+  <label for="result">Contact Result</label>
+  <select id="result"></select>
+  <div class="hint">Results starting with "Reached" mean the lead answered.</div>
+
+  <label for="salesperson">Salesperson</label>
+  <select id="salesperson"></select>
+
+  <label for="notes">Notes</label>
+  <textarea id="notes"></textarea>
+
+  <label for="nextAction">Next Action</label>
+  <input type="text" id="nextAction">
+
+  <label for="nextDate">Next Follow-up Date</label>
+  <input type="date" id="nextDate">
+  <div class="hint">Leave empty after an unanswered attempt to schedule the next one automatically.</div>
+
+  <label for="newStatus">Change Lead Status</label>
+  <select id="newStatus"></select>
+  <div class="hint">Leave on "Automatic" to let the system decide.</div>
+
+  <div class="actions">
+    <button class="primary" id="save" onclick="save()">Save</button>
+    <button onclick="google.script.host.close()">Cancel</button>
+  </div>
+  <div id="message"></div>
+
+  <script>
+    var DATA = JSON.parse(<?= payload ?>);
+
+    function fill(id, options, selected, emptyLabel) {
+      var select = document.getElementById(id);
+      if (emptyLabel !== null) {
+        var empty = document.createElement('option');
+        empty.value = '';
+        empty.textContent = emptyLabel;
+        select.appendChild(empty);
+      }
+      options.forEach(function (text) {
+        var option = document.createElement('option');
+        option.value = text;
+        option.textContent = text;
+        if (text === selected) option.selected = true;
+        select.appendChild(option);
+      });
+    }
+
+    document.getElementById('leadName').textContent = DATA.name || '(no name)';
+    document.getElementById('leadInfo').textContent =
+      'Lead ID ' + DATA.leadId + ' · Current status: ' + (DATA.status || '-');
+    fill('type', DATA.types, 'Phone Call', null);
+    fill('result', DATA.results, '', '(none)');
+    fill('salesperson', DATA.salespeople, DATA.salesperson, '(not assigned)');
+    fill('newStatus', DATA.statuses, '', 'Automatic');
+
+    function show(text, cls) {
+      var el = document.getElementById('message');
+      el.textContent = text;
+      el.className = cls;
+    }
+
+    function save() {
+      var button = document.getElementById('save');
+      button.disabled = true;
+      show('Saving...', '');
+      google.script.run
+        .withSuccessHandler(function (text) {
+          show(text, 'ok');
+          setTimeout(function () { google.script.host.close(); }, 1200);
+        })
+        .withFailureHandler(function (err) {
+          button.disabled = false;
+          show(err.message || String(err), 'error');
+        })
+        .submitFollowUp({
+          leadId: DATA.leadId,
+          type: document.getElementById('type').value,
+          result: document.getElementById('result').value,
+          salesperson: document.getElementById('salesperson').value,
+          notes: document.getElementById('notes').value,
+          nextAction: document.getElementById('nextAction').value,
+          nextFollowUpDate: document.getElementById('nextDate').value,
+          newStatus: document.getElementById('newStatus').value
+        });
+    }
+  </script>
+</body>
+</html>
